@@ -189,9 +189,6 @@ document.getElementById('alive-count').textContent = ENEMY_COUNT + 1; // تحد�
 // --- 6. تحميل النماذج (GLTF Loader) ---
 const loader = new GLTFLoader();
 
-// --- 5. تحميل النماذج (GLTF Loader) ---
-const loader = new GLTFLoader();
-
 function loadPlayerModel(modelPath) {
     // إزالة النموذج القديم إذا كان موجوداً
     if (playerModel) {
@@ -228,9 +225,9 @@ function loadPlayerModel(modelPath) {
 }
 
 // تحميل نموذج الخوذة كتجربة سكن
-loadPlayerModel('DamagedHelmet.glb'); 
+loadPlayerModel('./DamagedHelmet.glb'); // السطر المصحح للمسار
 
-// --- 6. التحكم (Joystick Logic) ---
+// --- 7. التحكم (Joystick Logic) ---
 const joystickZone = document.getElementById('joystick-zone');
 const joystickStick = document.getElementById('joystick');
 let joystickCenter = { x: 0, y: 0 };
@@ -285,7 +282,7 @@ function updateJoystick(touch) {
     velocity.z = Math.sin(angle) * PLAYER_SPEED;
 }
 
-// --- 7. حلقة اللعبة (Game Loop) ---
+// --- 8. حلقة اللعبة (Game Loop) ---
 function animate(time) {
     requestAnimationFrame(animate);
 
@@ -301,105 +298,61 @@ function animate(time) {
         player.rotation.y = -joystickAngle - Math.PI / 2;
     }
 
-    // حدود الخريطة (300x300)
-    const mapLimit = 148; 
-    player.position.x = Math.max(-mapLimit, Math.min(mapLimit, player.position.x));
-    player.position.z = Math.max(-mapLimit, Math.min(mapLimit, player.position.z));
-    
-        // الكاميرا تتبع اللاعب بسلاسة
-    const cameraOffset = new THREE.Vector3(0, 10, 15); 
-    const targetCameraPosition = new THREE.Vector3();
-    const smoothSpeed = 0.05; 
-
-    targetCameraPosition.copy(player.position).add(cameraOffset);
-    camera.position.lerp(targetCameraPosition, smoothSpeed);
-    camera.lookAt(player.position.x, player.position.y + 1, player.position.z); // النظر إلى مركز اللاعب
-
-    // حركة الأعداء (حركة عشوائية محسنة)
+    // تحديث حركة الأعداء (حركة عشوائية بسيطة)
     enemies.forEach(enemy => {
-        // حركة عشوائية بطيئة وموجهة قليلاً
-        const moveFactor = 0.05; // لتقليل سرعة الحركة العشوائية
-        
-        // إضافة خاصية "الهدف" لكل عدو
-        if (!enemy.userData.target) {
-            enemy.userData.target = new THREE.Vector3(
-                (Math.random() - 0.5) * 250,
-                1,
-                (Math.random() - 0.5) * 250
-            );
-        }
-
-        // التوجه نحو الهدف
-        const direction = new THREE.Vector3().subVectors(enemy.userData.target, enemy.position).normalize();
-        
-        enemy.position.x += direction.x * ENEMY_SPEED * delta * moveFactor;
-        enemy.position.z += direction.z * ENEMY_SPEED * delta * moveFactor;
-
-        // إذا وصل العدو إلى الهدف، اختر هدفًا جديدًا
-        if (enemy.position.distanceTo(enemy.userData.target) < 5) {
-            enemy.userData.target = new THREE.Vector3(
+        // حركة عشوائية بسيطة (يمكن تحسينها لاحقاً)
+        if (!enemy.targetPosition || enemy.position.distanceTo(enemy.targetPosition) < 5) {
+            enemy.targetPosition = new THREE.Vector3(
                 (Math.random() - 0.5) * 250,
                 1,
                 (Math.random() - 0.5) * 250
             );
         }
         
-        // حدود الخريطة للأعداء
-        enemy.position.x = Math.max(-mapLimit, Math.min(mapLimit, enemy.position.x));
-        enemy.position.z = Math.max(-mapLimit, Math.min(mapLimit, enemy.position.z));
+        const direction = enemy.targetPosition.clone().sub(enemy.position).normalize();
+        enemy.position.x += direction.x * ENEMY_SPEED * delta;
+        enemy.position.z += direction.z * ENEMY_SPEED * delta;
+        
+        // تدوير العدو ليواجه اتجاه الحركة
+        enemy.rotation.y = Math.atan2(direction.x, direction.z);
     });
+
+    // تحديث موقع الكاميرا (تتبع سلس)
+    const targetPosition = new THREE.Vector3(player.position.x, player.position.y + 15, player.position.z + 20);
+    camera.position.lerp(targetPosition, 0.1);
+    camera.lookAt(player.position.x, player.position.y + 5, player.position.z);
 
     renderer.render(scene, camera);
 }
 
-// تعديل الشاشة عند تغيير الحجم
+animate(0);
+
+// --- 9. التحكم في السكن والسلاح (زر المنظار) ---
+const SKINS = [
+    { name: "AK-47", color: 0x006400 }, // Forest Green
+    { name: "M4A1", color: 0x4682B4 }, // Camo Blue
+    { name: "Sniper", color: 0x8B0000 }, // Red Squad
+    { name: "Heavy Gunner", color: 0x333333 } // Dark Ops
+];
+let currentSkinIndex = 0;
+
+document.querySelector('.btn-scope').addEventListener('click', () => {
+    currentSkinIndex = (currentSkinIndex + 1) % SKINS.length;
+    const skin = SKINS[currentSkinIndex];
+
+    // تغيير لون اللاعب (إذا كان مكعباً مؤقتاً)
+    if (playerModel && playerModel.material) {
+        playerModel.material.color.set(skin.color);
+    }
+    
+    // تحديث اسم السلاح
+    document.getElementById('gun-card').textContent = skin.name;
+});
+
+// --- 10. استجابة لتغيير حجم الشاشة ---
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-animate(0);
-
-// --- 8. وظائف واجهة المستخدم (UI Functions) ---
-// (تم إبقاء وظائف واجهة المستخدم كما هي من التعديل السابق)
-let playerHP = 200;
-const maxHP = 200;
-
-function updateHP(damage) {
-    playerHP = Math.max(0, playerHP - damage);
-    const hpPercentage = (playerHP / maxHP) * 100;
-    
-    document.getElementById('hp-fill').style.width = `${hpPercentage}%`;
-    document.getElementById('hp-text').textContent = `${playerHP}/${maxHP}`;
-    
-    let color;
-    if (hpPercentage > 50) {
-        color = 'linear-gradient(90deg, #4CAF50, #8BC34A)'; 
-    } else if (hpPercentage > 20) {
-        color = 'linear-gradient(90deg, #FFC107, #FF9800)'; 
-    } else {
-        color = 'linear-gradient(90deg, #F44336, #D32F2F)'; 
-    }
-    document.getElementById('hp-fill').style.background = color;
-
-    if (playerHP === 0) {
-        console.log("Game Over!");
-    }
-}
-
-document.getElementById('fire-btn').addEventListener('click', () => {
-    console.log("Fire!");
-});
-
-document.querySelector('.btn-jump').addEventListener('click', () => {
-    console.log("Jump!");
-});
-
-// زر المنظار سيستخدم لتغيير السكن (مؤقتاً)
-document.querySelector('.btn-scope').addEventListener('click', () => {
-    // يمكن هنا إضافة منطق تحميل نموذج GLTF آخر
-    console.log("Scope/Skin Change!");
-});
-
-updateHP(0);
+ 
