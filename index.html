@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Battle Royale 3D Web</title>
+    <!-- استخدام نسخة Three.js أحدث ومستقرة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r137/three.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div id="ui-layer">
+        <div class="mini-map"></div>
+        
+        <div class="top-stats">
+            <span class="alive-badge">Alive: <span id="alive-count">32</span></span>
+            <span class="kill-badge">💀 <span id="kill-count">5</span></span>
+        </div>
+        <div class="joystick-zone" id="joystick-zone">
+            <div class="joystick-base">
+                <div class="joystick-stick" id="joystick"></div>
+            </div>
+        </div>
+        <div class="controls-right">
+            <button class="btn-round btn-jump">🦘</button>
+            <button class="btn-round btn-scope">🎯</button>
+            <button class="btn-fire" id="fire-btn"></button> 
+        </div>
+        <div class="bottom-center">
+            <div class="hp-bar">
+                <div class="hp-fill" id="hp-fill"></div>
+                <span class="hp-text" id="hp-text">200/200</span>
+            </div>
+            <div class="gun-card" id="gun-card">AK-47</div>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

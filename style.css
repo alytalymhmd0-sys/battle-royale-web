@@ -1,0 +1,200 @@
+/* style.css */
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* الطبقة الخلفية */
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* الطبقة العلوية */
+    pointer-events: none; /* يسمح باللمس فقط على الأزرار */
+}
+
+/* تمكين اللمس للعناصر التفاعلية */
+.joystick-zone, .controls-right button {
+    pointer-events: auto;
+}
+
+/* الخريطة */
+.mini-map {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 50%; /* دائرية */
+    background: rgba(0,0,0,0.5); /* إزالة الصورة المؤقتة */
+    background-size: cover;
+}
+
+.top-stats {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.alive-badge, .kill-badge {
+    background: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* الجويستيك */
+.joystick-zone {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 120px;
+    height: 120px;
+}
+
+.joystick-base {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    position: relative;
+}
+
+.joystick-stick {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* الأزرار اليمنى */
+.controls-right {
+    position: absolute;
+    bottom: 60px;
+    right: 40px;
+    width: 200px;
+    height: 200px;
+}
+
+.btn-round {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.btn-round:active {
+    background: rgba(255,255,255,0.4);
+}
+
+.btn-jump { bottom: 10px; right: 90px; }
+.btn-scope { top: 50px; right: 10px; }
+
+.btn-fire {
+    width: 70px;
+    height: 70px;
+    /* إزالة الأيقونة الخارجية واستبدالها بتصميم CSS بسيط */
+    background-color: rgba(255, 50, 50, 0.3);
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255, 50, 50, 0.5);
+}
+
+.btn-fire::after {
+    content: '🔥';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+}
+
+.btn-fire:active { background-color: rgba(255, 0, 0, 0.6); }
+
+/* الصحة والسلاح */
+.bottom-center {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    text-align: center;
+}
+
+.hp-bar {
+    width: 200px;
+    height: 15px; /* زيادة الارتفاع */
+    background: #333;
+    border: 1px solid white;
+    margin: 0 auto 5px auto;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hp-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4500, #ff8c00); /* تدرج لوني أفضل */
+    transition: width 0.3s ease-out; /* إضافة انتقال سلس */
+}
+
+.hp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+    z-index: 2;
+}
+
+.gun-card {
+    color: white;
+    font-weight: bold;
+    border: 1px solid rgba(255,255,255,0.3);
+    display: inline-block;
+    padding: 5px 15px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+}
